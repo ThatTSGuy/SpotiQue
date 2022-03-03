@@ -1,0 +1,70 @@
+@font-face {
+    font-family: 'Circular Black';
+    src: url('https://cdn.jsdelivr.net/gh/Holo-Host/holo-communities/public/assets/fonts/Circular-Font-Family/lineto-circular-black.ttf');
+}
+
+:root {
+    --theme-green: #1DB954;
+    --theme-white: #FFFFFF;
+    --theme-black: #191414;
+    --theme-gray: #282323;
+
+    --theme-error: #ff3333;
+}
+
+html {
+    font-size: 12px;
+    font-family: 'Circular Black';
+    color: var(--theme-white);
+    background-color: var(--theme-black);
+}
+
+@media (min-width: 576px) {
+    html { font-size: 14px; }
+}
+
+@media (min-width: 768px) {
+    html { font-size: 16px; }
+}
+
+@media (min-width: 992px) {
+    html { font-size: 18px; }
+}
+
+@media (min-width: 1200px) {
+    html { font-size: 20px; }
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    height: 100vh;
+}
+
+.error-toast {
+    position: absolute;
+    top: 20px;
+    padding: 0.571rem 1.429rem;
+
+    border-radius: 0.5rem;
+    background-color: var(--theme-error);
+    animation: fade-down 0.5s;
+}
+
+.hidden {
+    display: none;
+}
+
+@keyframes fade-down {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

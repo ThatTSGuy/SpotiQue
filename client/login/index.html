@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>SpotiQue - Login</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="../assets/base-style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="error-toast hidden">Error: user_canceled</div>
+    <div class="login-container">
+        <div class="logo">SpotiQue</div>
+        <div class="login-btn-container">
+            <img class="login-btn-logo" src="../assets/spotify_icon_white.png" />
+            <div class="login-btn-text">Login with Spotify</div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(location.search);
+
+        if (params.has('error')) {
+            const toast = document.querySelector('.error-toast');
+            toast.innerText = 'An error occurred: '+ params.get('error');
+            toast.classList.remove('hidden');
+        }
+    </script>
+</body>
+
+</html>
