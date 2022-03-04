@@ -1,87 +1,42 @@
 const express = require('express');
-const fetch = require('node-fetch');
-const crypto = require('node:crypto');
+const session = require('express-session');
 const path = require('node:path');
+const spotify = require('./spotify');
 
-const clientID = '6b013b2d7ae74dd59705df7deafb590e';
-const clientSecret = 'a7082d1445ea4f40ad0a02591de24628';
-const codeVerifier = crypto.randomBytes(32).toString('hex');
-const redirectURI = 'http://localhost:3000/callback';
+const redirectURI = 'http://localhost:3000/auth/callback';
 
 const app = express();
 
-app.use(express.static('../client/views'));
+app.use(express.static(path.resolve('client/')));
+app.use(session({
+    secret: '8834f958-171c-40cc-87a0-369a32f50e0c',
+    
+}))
 
 app.get('/', (req, res) => {
-    res.sendFile(path.resolve('client/login/index.html'));
+    res.redirect('/login');
 })
 
 app.get('/login', (req, res) => {
-    const state = crypto.randomUUID();
-    const scope = 'user-read-private';
-
-    res.redirect('https://accounts.spotify.com/authorize?' +
-        toQueryString({
-            response_type: 'code',
-            client_id: clientID,
-            scope: scope,
-            redirect_uri: redirectURI,
-            state: state,
-            // PKCE extension
-            code_challenge_method: 'S256',
-            code_challenge: crypto.createHash('sha256').update(codeVerifier).digest('base64url'),
-        })
-    )
+    res.sendFile(path.resolve('client/html/login.html'));
 })
 
-app.get('/callback', async (req, res) => {
+app.get('/account')
+
+app.get('/auth/login', (req, res) => {
+    res.redirect(spotify.getAuthURL());
+})
+
+app.get('/auth/callback', async (req, res) => {
     const { code, state, error } = req.query;
 
-    if (error) {
-        res.send('An error occurred while trying to authenticate you: ' + error);
-        return;
-    }
+    if (error) return res.redirect('/login?error=' + error);
 
-    let response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        body: toQueryString({
-            grant_type: 'authorization_code',
-            code,
-            redirect_uri: redirectURI,
-            // PKCE extension
-            client_id: clientID,
-            code_verifier: codeVerifier,
-        }),
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + Buffer.from(`${clientID}:${clientSecret}`).toString('base64'),
-        },
-    })
+    const token = await spotify.getAuthToken(code);
 
-    let data = await response.json();
-
-    console.log(data);
-
-    response = await fetch('https://api.spotify.com/v1/me/player/queue', {
-        method: 'POST',
-        body: toQueryString({
-            uri: 'spotify:track:2GYHyAoLWpkxLVa4oYTVko',
-        }),
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + data.access_token,
-        },
-    })
-
-    console.log(await response.json());
+    console.log(token);
 })
 
 app.listen(3000, () => {
     console.log('Sever started.');
 })
-
-function toQueryString(object) {
-    return Object.keys(object)
-        .map(key => `${key}=${object[key]}`)
-        .join('&');
-}

@@ -51,6 +51,8 @@ body {
     border-radius: 0.5rem;
     background-color: var(--theme-error);
     animation: fade-down 0.5s;
+
+    font-size: 0.8rem;
 }
 
 .hidden {
