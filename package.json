@@ -11,6 +11,8 @@
   "dependencies": {
     "express": "^4.17.3",
     "express-session": "^1.17.2",
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.7",
+    "socket.io": "^4.4.1",
+    "spotify-web-api-node": "^5.0.2"
   }
 }

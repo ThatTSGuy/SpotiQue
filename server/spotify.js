@@ -1,51 +1,54 @@
-const fetch = require('node-fetch');
-const crypto = require('node:crypto');
+const SpotifyAPI = require('spotify-web-api-node');
+const util = require('./util');
 
-const clientID = '6b013b2d7ae74dd59705df7deafb590e';
-const clientSecret = 'a7082d1445ea4f40ad0a02591de24628';
-const codeVerifier = crypto.randomBytes(32).toString('hex');
+const api = newAPI();
 
-function getAuthURL() {
-    const state = crypto.randomUUID();
-    const scope = 'user-read-private';
+class Room {
+    constructor(accessToken, io) {
+        this.io = io;
+        this.id = util.randomString(5);
 
-    return 'https://accounts.spotify.com/authorize?' +
-        toQueryString({
-            response_type: 'code',
-            client_id: clientID,
-            scope: scope,
-            redirect_uri: redirectURI,
-            state: state,
-            // PKCE extension
-            code_challenge_method: 'S256',
-            code_challenge: crypto.createHash('sha256').update(codeVerifier).digest('base64url'),
-        })
+        this.api = newAPI(accessToken);
+
+        this.state = { isPlaying: false };
+        this.beginSync();
+    }
+
+    beginSync() {
+        setInterval(async () => {
+            const res = await this.api.getMyCurrentPlaybackState();
+            console.log(res.body)
+
+            if (res.body && Object.keys(res.body).length !== 0) {
+                this.state = {
+                    name: res.body.item.name,
+                    artists: res.body.item.artists.map(a => a.name).join(', '),
+                    image: res.body.item.album.images[0].url,
+                    progress: res.body.progress_ms,
+                    duration: res.body.item.duration_ms,
+                    volume: res.body.device.volume_percent,
+                    isPlaying: res.body.is_playing,
+                }
+            } else {
+                this.state = { isPlaying: false };
+            }
+
+            this.emit('state', this.state);
+        }, 5000);
+    }
+
+    emit(event, data) {
+        this.io.to(this.id).emit(event, data);
+    }
 }
 
-async function getAuthToken(code) {
-    const response = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        body: toQueryString({
-            grant_type: 'authorization_code',
-            code,
-            redirect_uri: redirectURI,
-            // PKCE extension
-            client_id: clientID,
-            code_verifier: codeVerifier,
-        }),
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + Buffer.from(`${clientID}:${clientSecret}`).toString('base64'),
-        },
+function newAPI(accessToken) {
+    return new SpotifyAPI({
+        clientId: '6b013b2d7ae74dd59705df7deafb590e',
+        clientSecret: '319c0624bff34fa79c0dd007aa907e29',
+        redirectUri: 'http://localhost:3000/auth/callback',
+        accessToken,
     })
-
-    return await response.json();
 }
 
-function toQueryString(object) {
-    return Object.keys(object)
-        .map(key => `${key}=${object[key]}`)
-        .join('&');
-}
-
-module.exports = { getAuthURL, getAuthToken };
+module.exports = { api, Room };

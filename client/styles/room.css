@@ -1,0 +1,56 @@
+.content-container {
+    width: 300px;
+
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    flex-direction: column;
+}
+
+.track-image {
+    margin-bottom: 10px;
+}
+
+.track-name {
+    font-size: 1.25rem;
+}
+
+.track-artist {
+    margin-bottom: 20px;
+
+    font-size: 0.75rem;
+    color: #b3b3b3;
+}
+
+.track-progress {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    color: #A7A7A7;
+    font-size: 0.75rem;
+}
+
+.progress-container {
+    height: 5px;
+    flex-grow: 1;
+
+    background-color: #535353;
+    border-radius: 2px;
+}
+
+.progress-track {
+    position: absolute;
+    height: 5px;
+    width: 30px;
+
+    border-radius: 2px;
+    background-color: #b3b3b3;
+}
+
+.search-input {
+    color: white;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid #757575;
+}
