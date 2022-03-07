@@ -1,4 +1,5 @@
 const SpotifyAPI = require('spotify-web-api-node');
+const fetch = require('node-fetch');
 const util = require('./util');
 
 const api = newAPI();
@@ -17,7 +18,6 @@ class Room {
     beginSync() {
         setInterval(async () => {
             const res = await this.api.getMyCurrentPlaybackState();
-            console.log(res.body)
 
             if (res.body && Object.keys(res.body).length !== 0) {
                 this.state = {
@@ -37,6 +37,21 @@ class Room {
         }, 5000);
     }
 
+    setVolume(volume) {
+      this.api.setVolume(volume);
+    }
+
+    playNext(uri) {
+      fetch('https://api.spotify.com/v1/me/player/queue', {
+        method: 'POST',
+        body: util.toQueryString({ uri }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + this.api.getAccessToken(),
+        },
+      }).then(res => console.log(res));
+    }
+
     emit(event, data) {
         this.io.to(this.id).emit(event, data);
     }
@@ -46,7 +61,7 @@ function newAPI(accessToken) {
     return new SpotifyAPI({
         clientId: '6b013b2d7ae74dd59705df7deafb590e',
         clientSecret: '319c0624bff34fa79c0dd007aa907e29',
-        redirectUri: 'http://localhost:3000/auth/callback',
+        redirectUri: 'https://SpotiQue.jacktemko1.repl.co/auth/callback',
         accessToken,
     })
 }

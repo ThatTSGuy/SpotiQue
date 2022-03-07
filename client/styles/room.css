@@ -11,23 +11,23 @@
 }
 
 .track-name {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
 }
 
 .track-artist {
     margin-bottom: 20px;
 
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: #b3b3b3;
 }
 
 .track-progress {
     display: flex;
-    gap: 10px;
+    gap: 5px;
     align-items: center;
 
     color: #A7A7A7;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
 }
 
 .progress-container {

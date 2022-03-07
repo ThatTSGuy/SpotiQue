@@ -21,13 +21,11 @@ let localState = {
 }
 
 socket.on('state', state => {
-    if (state.isPlaying) {
-        localState = state;
-    }
+    localState = state;
 })
 
 setInterval(() => {
-    localState.progress += 1000;
+    if (localState.isPlaying) localState.progress += 1000;
     updateView();
 }, 1000);
 

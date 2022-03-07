@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
 
-const path = require('node:path');
+const path = require('path');
 const spotify = require('./spotify');
 const util = require('./util');
 
@@ -61,4 +61,5 @@ io.on('connect', async socket => {
     socket.emit('state', room.state);
 
     socket.on('volume', volume => room.setVolume(volume));
+    socket.on('playNext', uri => room.playNext(uri));
 })
